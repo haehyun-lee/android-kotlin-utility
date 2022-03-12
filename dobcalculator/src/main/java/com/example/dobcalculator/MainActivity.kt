@@ -42,7 +42,12 @@ class MainActivity : AppCompatActivity() {
                 val selectedDateInMinutes = sdf.parse(selectedDate).time / 60000
                 val currentDateInMinutes = sdf.parse(sdf.format(System.currentTimeMillis())).time / 60000
 
-                binding.tvAgeInMinutes.text = (currentDateInMinutes - selectedDateInMinutes).toString()
+                val diff = (currentDateInMinutes - selectedDateInMinutes)
+
+                // 분, 시간, 일
+                binding.tvAgeInMinutes.text = diff.toString()
+                binding.tvAgeInHour.text = (diff / 60).toString()
+                binding.tvAgeInDay.text = (diff / (60 * 24)).toString()
             },
             year,
             month,
