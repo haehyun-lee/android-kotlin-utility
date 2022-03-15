@@ -8,5 +8,5 @@ dependencyResolutionManagement {
 }
 rootProject.name = "AndroidUtility"
 include ':app'
-include ':peplecounter'
 include ':dobcalculator'
+include ':calculator'
