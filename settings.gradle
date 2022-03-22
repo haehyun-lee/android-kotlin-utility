@@ -10,3 +10,4 @@ rootProject.name = "AndroidUtility"
 include ':app'
 include ':dobcalculator'
 include ':calculator'
+include ':quizapp'
