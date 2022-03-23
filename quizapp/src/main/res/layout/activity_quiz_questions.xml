@@ -20,17 +20,23 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:gravity="center"
+
             android:textSize="22sp"
             android:textColor="#363A43"
             tools:text = "What country does this flag belong to?" />
 
         <ImageView
             android:id="@+id/ivImage"
+            android:background="@drawable/square_background_border_black"
+            android:padding="1dp"
+            android:scaleType="centerCrop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
+            android:layout_gravity="center"
             android:contentDescription="Quiz Image"
-            tools:src="@drawable/ic_flag_of_germany" />
+            tools:src="@drawable/ic_flag_of_germany"
+            />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -44,7 +50,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:max="9"
+                android:max="10"
                 android:minHeight="50dp"
                 android:progress="5"
                 style="?android:attr/progressBarStyleHorizontal"
