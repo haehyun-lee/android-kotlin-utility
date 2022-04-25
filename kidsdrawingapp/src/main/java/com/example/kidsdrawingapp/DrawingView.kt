@@ -16,6 +16,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     private var mCanvasBitmap: Bitmap? = null
     private var mBrushSize: Float = 0.toFloat()
     private var color = Color.BLACK
+    private val mPath = ArrayList<CustomPath>()
 
     init {
         setUpDrawing()
@@ -43,19 +44,32 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         canvas = Canvas(mCanvasBitmap!!)    // 캔버스 객체 생성, 캔버스를 비트맵에 붙이기 -> 이후 캔버스에 그리는 그래픽은 모두 mCanvasBitmap에 적용된다.
     }
 
+    /*
+    Path 정보에 색상, 굵기 정보를 추가로 저장하기 위한 CustomPath
+    마우스 클릭 ~ 이동 ~ 떼기 까지의 선 하나의 색, 굵기가 각자 다르기 때문
+     */
     internal inner class CustomPath(var color: Int, var brushThickness: Float): Path() {
 
     }
 
-    // Change Canvas to Canvas? if fails
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        canvas.drawBitmap(mCanvasBitmap!!, 0f, 0f, mCanvasPaint)    // 미리 정의된 비트맵 객체가 화면에 표시됨, 캔버스 배경 그리기
 
-        canvas.drawBitmap(mCanvasBitmap!!, 0f, 0f, mCanvasPaint)    // 미리 정의된 비트맵 객체가 화면에 표시됨
+        // Path 정보를 읽어서 해당하는 디자인으로 그리기 (사용자가 그렸던 Path 정보를 저장해뒀다가 화면에 다시 뿌리는 방식)
+        for (path in mPath) {
+            mDrawPaint!!.strokeWidth = path.brushThickness
+            mDrawPaint!!.color = path.color
+
+            canvas.drawPath(path, mDrawPaint!!)
+        }
+
         if (!mDrawPath!!.isEmpty) {
             // CustomPath 색상, 굵기 -> Paint 설정
             mDrawPaint!!.strokeWidth = mDrawPath!!.brushThickness
             mDrawPaint!!.color = mDrawPath!!.color
+
+            // Canvas에 Path 그리기
             canvas.drawPath(mDrawPath!!, mDrawPaint!!)
         }
 
@@ -71,13 +85,17 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
                 mDrawPath!!.color = color
                 mDrawPath!!.brushThickness = mBrushSize
 
+                // Path 초기화 & 클릭 좌표(x, y)를 기준점으로 설정
                 mDrawPath!!.reset()
                 mDrawPath!!.moveTo(touchX!!, touchY!!)
             }
             MotionEvent.ACTION_MOVE -> {
+                // 기준점에서 이동 좌표(x, y)까지 라인 그리기
                 mDrawPath!!.lineTo(touchX!!, touchY!!)
             }
             MotionEvent.ACTION_UP -> {
+                mPath.add(mDrawPath!!)
+                // 새로운 Path 준비
                 mDrawPath = CustomPath(color, mBrushSize)
             }
             else -> return false
