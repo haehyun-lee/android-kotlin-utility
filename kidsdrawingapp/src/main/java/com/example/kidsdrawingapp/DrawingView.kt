@@ -3,6 +3,8 @@ package com.example.kidsdrawingapp
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.DisplayMetrics
+import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 
@@ -34,7 +36,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
         mCanvasPaint = Paint(Paint.DITHER_FLAG)
 
-        mBrushSize = 20.toFloat()
+//        mBrushSize = 20.toFloat()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -44,13 +46,6 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         canvas = Canvas(mCanvasBitmap!!)    // 캔버스 객체 생성, 캔버스를 비트맵에 붙이기 -> 이후 캔버스에 그리는 그래픽은 모두 mCanvasBitmap에 적용된다.
     }
 
-    /*
-    Path 정보에 색상, 굵기 정보를 추가로 저장하기 위한 CustomPath
-    마우스 클릭 ~ 이동 ~ 떼기 까지의 선 하나의 색, 굵기가 각자 다르기 때문
-     */
-    internal inner class CustomPath(var color: Int, var brushThickness: Float): Path() {
-
-    }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -104,4 +99,20 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
         return true
     }
+
+    fun setSizeForBrush(newSize: Float) {
+        // 화면 해상도 차이를 고려해 브러시 크기 변환?
+        mBrushSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+            newSize, resources.displayMetrics
+        )
+
+        mDrawPaint!!.strokeWidth = mBrushSize
+    }
+
+    /*
+    Path 정보에 색상, 굵기 정보를 추가로 저장하기 위한 CustomPath
+    마우스 클릭 ~ 이동 ~ 떼기 까지의 선 하나의 색, 굵기가 각자 다르기 때문
+     */
+    internal inner class CustomPath(var color: Int, var brushThickness: Float): Path() { }
+
 }
