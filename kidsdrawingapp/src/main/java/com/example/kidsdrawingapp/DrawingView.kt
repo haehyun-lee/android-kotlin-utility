@@ -108,6 +108,12 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         mDrawPaint!!.strokeWidth = mBrushSize
     }
 
+    fun setColor(newColor: String) {
+        // get the color from String
+        color = Color.parseColor(newColor)
+        mDrawPaint!!.color = color
+    }
+
     /*
     Path 정보에 색상, 굵기 정보를 추가로 저장하기 위한 CustomPath
     마우스 클릭 ~ 이동 ~ 떼기 까지의 선 하나의 색, 굵기가 각자 다르기 때문
