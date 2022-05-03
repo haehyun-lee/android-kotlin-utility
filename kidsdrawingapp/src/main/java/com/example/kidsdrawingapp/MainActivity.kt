@@ -37,6 +37,11 @@ class MainActivity : AppCompatActivity() {
             showBushSizeChooserDialog()
         }
 
+        // 갤러리
+        val ibGallery = findViewById<ImageButton>(R.id.ib_gallery)
+        ibGallery.setOnClickListener {
+
+        }
     }
 
     // 브러시 크기 선택 창
@@ -47,7 +52,7 @@ class MainActivity : AppCompatActivity() {
 
         val smallBtn = brushDialog.findViewById<ImageButton>(R.id.ib_small_brush)
         smallBtn.setOnClickListener {
-            drawingView?.setSizeForBrush(5.toFloat())
+            drawingView?.setSizeForBrush(10.toFloat())
             brushDialog.dismiss()
         }
         val mediumBtn = brushDialog.findViewById<ImageButton>(R.id.ib_medium_brush)
