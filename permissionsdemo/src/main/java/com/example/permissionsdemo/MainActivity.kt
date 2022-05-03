@@ -12,7 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 
 class MainActivity : AppCompatActivity() {
 
-    // 카메라 퍼미션 요청
+    // 단일 퍼미션 요청, 응답
     private val cameraResultLauncher : ActivityResultLauncher<String> =
         registerForActivityResult(ActivityResultContracts.RequestPermission()){ isGranted ->
             if (isGranted) {
@@ -21,6 +21,42 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Permission denied for camera.", Toast.LENGTH_LONG).show()
             }
         }
+
+    // 다중 퍼미션 요청, 응답
+    private val cameraAndLocationResultLauncher : ActivityResultLauncher<Array<String>> =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()){ permissions ->
+            // Entry<퍼미션, 허용 여부>
+            permissions.entries.forEach {
+                val permissionName = it.key
+                val isGranted = it.value
+                if (isGranted) {
+                    when (permissionName) {
+                        Manifest.permission.ACCESS_FINE_LOCATION -> {
+                            Toast.makeText(this, "Permission granted for fine location.", Toast.LENGTH_LONG).show()
+                        }
+                        Manifest.permission.ACCESS_COARSE_LOCATION -> {
+                            Toast.makeText(this, "Permission granted for coarse location.", Toast.LENGTH_LONG).show()
+                        }
+                        else -> {
+                            Toast.makeText(this, "Permission granted for camera.", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                } else {
+                    when (permissionName) {
+                        Manifest.permission.ACCESS_FINE_LOCATION -> {
+                            Toast.makeText(this, "Permission denied for fine location.", Toast.LENGTH_LONG).show()
+                        }
+                        Manifest.permission.ACCESS_COARSE_LOCATION -> {
+                            Toast.makeText(this, "Permission denied for coarse location.", Toast.LENGTH_LONG).show()
+                        }
+                        else -> {
+                            Toast.makeText(this, "Permission denied for camera.", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
+            }
+        }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +72,13 @@ class MainActivity : AppCompatActivity() {
 
             } else {
                 // API 23 미만이거나 최초로 퍼미션 요청을 받았을 경우
-                cameraResultLauncher.launch(Manifest.permission.CAMERA)
+                cameraAndLocationResultLauncher.launch(
+                    arrayOf(
+                        Manifest.permission.CAMERA,
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    )
+                )
             }
         }
     }
