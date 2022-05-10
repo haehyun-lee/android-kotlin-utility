@@ -3,7 +3,6 @@ package com.example.kidsdrawingapp
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
@@ -18,10 +17,27 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     private var mCanvasBitmap: Bitmap? = null
     private var mBrushSize: Float = 0.toFloat()
     private var color = Color.BLACK
-    private val mPath = ArrayList<CustomPath>()
+
+    private val mPaths = ArrayList<CustomPath>()
+    private val mUndoPaths = ArrayList<CustomPath>()
 
     init {
         setUpDrawing()
+    }
+
+    fun onClickUndo(){
+        if (mPaths.size > 0) {
+            // 최근에 그려진 순으로 선을 지움
+            mUndoPaths.add(mPaths.removeAt(mPaths.size - 1))
+            invalidate()
+        }
+    }
+
+    fun onClickRedo(){
+        if (mUndoPaths.size > 0) {
+            mPaths.add(mUndoPaths.removeAt(mUndoPaths.size - 1))
+            invalidate()
+        }
     }
 
     // 멤버 초기화
@@ -52,7 +68,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         canvas.drawBitmap(mCanvasBitmap!!, 0f, 0f, mCanvasPaint)    // 미리 정의된 비트맵 객체가 화면에 표시됨, 캔버스 배경 그리기
 
         // Path 정보를 읽어서 해당하는 디자인으로 그리기 (사용자가 그렸던 Path 정보를 저장해뒀다가 화면에 다시 뿌리는 방식)
-        for (path in mPath) {
+        for (path in mPaths) {
             mDrawPaint!!.strokeWidth = path.brushThickness
             mDrawPaint!!.color = path.color
 
@@ -85,11 +101,15 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
                 mDrawPath!!.moveTo(touchX!!, touchY!!)
             }
             MotionEvent.ACTION_MOVE -> {
+                // Undo 후에 새로운 선 그리면 Undo 내역 초기화
+                if (mUndoPaths.size > 0)
+                    mUndoPaths.clear()
+                
                 // 기준점에서 이동 좌표(x, y)까지 라인 그리기
                 mDrawPath!!.lineTo(touchX!!, touchY!!)
             }
             MotionEvent.ACTION_UP -> {
-                mPath.add(mDrawPath!!)
+                mPaths.add(mDrawPath!!)
                 // 새로운 Path 준비
                 mDrawPath = CustomPath(color, mBrushSize)
             }
